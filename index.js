@@ -2,6 +2,10 @@ require('dotenv').config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const https = require('https');
+const fs = require('fs');
+var cors = require('cors');
+
 const app = express();
 
 mongoose.set('debug', true);
@@ -16,12 +20,20 @@ db.once('open', () => {
 	console.log("DB Connected");
 });
 
+app.use(cors())
 app.use(express.json());
 
 const MainRouter = require("./routes/Main");
 app.use("/", MainRouter);
 
+https.createServer({
+    key: fs.readFileSync('../certs/key.pem'),
+    cert: fs.readFileSync('../certs/cert.pem'),
+    passphrase: process.env.CERT_PASSPHRASE
+}, app)
+.listen(3000);
+
+/*
 app.listen(3000, () => {
 	console.log("Server started on port 3000");
-	
-});
+});*/
