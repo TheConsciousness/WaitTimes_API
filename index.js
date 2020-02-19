@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const https = require('https');
 const fs = require('fs');
+var cors = require('cors');
 
 const app = express();
 
@@ -19,6 +20,7 @@ db.once('open', () => {
 	console.log("DB Connected");
 });
 
+app.use(cors())
 app.use(express.json());
 
 const MainRouter = require("./routes/Main");
