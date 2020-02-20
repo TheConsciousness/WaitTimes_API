@@ -3,6 +3,7 @@ const moment = require("moment");
 const router = express.Router();
 const Ride = require("../models/Ride");
 var ObjectID = require("bson-objectid");
+var Int32 = require('mongoose-int32');
 
 /*  Endpoints:
 	/ 
@@ -75,7 +76,14 @@ router.get("/name/:name/between/:dayOne/and/:dayTwo", async (req, res) => {
 		//const tmpObjIdTwo = ObjectID.createFromTime(moment("2020-02-16").endOf('day').unix());
 		
 		const rides = await Ride.find({"_id":{$gt: tmpObjIdOne, $lt: tmpObjIdTwo}, "name":req.params.name});
-		return res.send(rides); 
+		
+		//rides.forEach((ride,index) => { console.log(ride); console.log('the id: '+ ride._id); console.log('the name: '+ride.name); });
+				
+		let formattedRides = rides.map((ride) => {
+			return { id:ride.toJSON()._id, waitTime:ride.toJSON().waitTime };
+		});
+				
+		return res.send(formattedRides); 
 	}
 	catch (err) {
 		return res.send("catch: "+err);
