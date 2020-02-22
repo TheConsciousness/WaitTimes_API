@@ -5,11 +5,20 @@ const rideSchema = new mongoose.Schema({
 	_id: {
 		type: mongoose.Schema.ObjectId
 	},
-	waitTimes: {
-		type: Int32
+	name: {
+		type: String
+	},
+	time: {
+		type: String
+	},
+	park: {
+		type: String
 	},
 	status: {
 		type: String
+	},
+	waitTime: {
+		type: Int32
 	}
 });
 
