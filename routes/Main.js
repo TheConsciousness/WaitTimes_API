@@ -61,7 +61,6 @@ router.get("/days/:date", async (req, res) => {
 
 // Get name between dates
 router.get("/name/:name/between/days/:dayOne/and/:dayTwo", async (req, res) => {
-
 	console.log(`'/name/${req.params.name}/between/days/${req.params.dayOne}/and/${req.params.dayTwo}' requested`);
 	
 	if (!moment(req.params.dayOne).isValid() || !moment(req.params.dayTwo).isValid()) {
@@ -69,19 +68,22 @@ router.get("/name/:name/between/days/:dayOne/and/:dayTwo", async (req, res) => {
 	}
 	
 	try {
-		const tmpObjIdOne = ObjectID.createFromTime(moment(req.params.dayOne).tz('America/Indiana/Indianapolis').startOf('day').unix());
-		const tmpObjIdTwo = ObjectID.createFromTime(moment(req.params.dayTwo).tz('America/Indiana/Indianapolis').endOf('day').unix());
+		// TZ does NOT work in this case...despite my thousand attempts. I believe TZ and .unix() don't play well together.
+		// moment(req.params.dayOne).startOf('day').tz('America/Indiana/Indianapolis').unix();
+		
+		// Not proud of this...
+		const tmpObjIdOne = ObjectID.createFromTime(moment(req.params.dayOne).startOf('day').add(5, 'hours').unix());
+		const tmpObjIdTwo = ObjectID.createFromTime(moment(req.params.dayTwo).endOf('day').add(5, 'hours').unix());
+		
+		// tmpObjIdOne.getTimestamp() doesn't reflect how Mongo actually parses the timestamp....
+		//console.log(`Searching between ${tmpObjIdOne.getTimestamp()} and ${tmpObjIdTwo.getTimestamp()}`);
 		
 		const rides = await Ride.find({"_id":{$gt: tmpObjIdOne, $lt: tmpObjIdTwo}, "name":req.params.name});
-		const beforeTime = moment().valueOf();
-		
-		//rides.forEach((ride,index) => { console.log(ride); console.log('the id: '+ ride._id); console.log('the name: '+ride.name); });
-				
+
 		let formattedRides = rides.map((ride) => {
-			//console.log("1: "+ moment(ride.toJSON()._id.getTimestamp()).tz('America/Indiana/Indianapolis').format());
-			return { time:moment(ride.toJSON()._id.getTimestamp()).tz('America/Indiana/Indianapolis').format('MM/DD/YYYY h:mm:ss A'), waitTime:ride.toJSON().waitTime };
+			//return { time:moment(ride.toJSON()._id.getTimestamp()).tz('America/Indiana/Indianapolis').format('MM/DD/YYYY h:mm:ss A'), waitTime:ride.toJSON().waitTime };
+			return { time:ride.toJSON().time, waitTime:ride.toJSON().waitTime };
 		});
-		const afterTime = moment().valueOf();
 				
 		return res.send(formattedRides); 
 	}

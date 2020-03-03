@@ -26,9 +26,11 @@ app.use(express.json());
 const MainRouter = require("./routes/Main");
 app.use("/", MainRouter);
 
+
 https.createServer({
-    key: fs.readFileSync('../certs/key.pem'),
-    cert: fs.readFileSync('../certs/cert.pem'),
+    key: fs.readFileSync('../certs/jordanbrinkman.dev.key'),
+    cert: fs.readFileSync('../certs/jordanbrinkman_dev.crt'),
+    ca: fs.readFileSync('../certs/jordanbrinkman_dev.ca-bundle'),
     passphrase: process.env.CERT_PASSPHRASE
 }, app)
 .listen(3000);
@@ -36,4 +38,5 @@ https.createServer({
 /*
 app.listen(3000, () => {
 	console.log("Server started on port 3000");
-});*/
+});
+*/
