@@ -7,19 +7,7 @@ const rideSchema = new mongoose.Schema({
 	},
 	name: {
 		type: String
-	},
-	time: {
-		type: String
-	},
-	park: {
-		type: String
-	},
-	status: {
-		type: String
-	},
-	waitTime: {
-		type: Int32
 	}
 });
 
-module.exports = mongoose.model('Ride', rideSchema, "Rides");
+module.exports = mongoose.model('Name', rideSchema, "Names");
